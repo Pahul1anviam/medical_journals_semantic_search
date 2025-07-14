@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg
+*.egg-info/
+
+# Virtual environment
+venv/
+.env
+
+# Qdrant DB files
+qdrant_db/
+
+# Editor/IDE specific files
+.vscode/  # If you use VS Code, to ignore its config files
+
+# Specific log or temporary files if any
+# You can add more patterns here if you find other files that should be ignored
