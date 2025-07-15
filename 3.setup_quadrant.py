@@ -1,7 +1,7 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance
 
-collection_name = "medical_chunks"
+collection_name = "medical_chunks_new"
 
 client = QdrantClient(path="./qdrant_db")
 client.recreate_collection(

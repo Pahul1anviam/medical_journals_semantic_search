@@ -1,8 +1,5 @@
-# app.py
-
 import streamlit as st
-from semantic_search import semantic_search, generate_summary
-
+from semantic_search import search_documents, generate_summary
 
 st.set_page_config(page_title="🧠 PubMed Semantic Search", layout="wide")
 st.title("🔍 Medical Journals Semantic Search")
@@ -17,11 +14,27 @@ if st.button("🔍 Search PubMed Abstracts"):
         st.warning("Please enter a valid query.")
     else:
         with st.spinner("Processing..."):
-            results = semantic_search(query, top_k=top_k)
-            st.subheader("📚 Top Retrieved Chunks")
-            for i, r in enumerate(results, 1):
-                st.markdown(f"**{i}. Score:** {r.score:.4f}")
-                st.write(r.payload["text"])
+            results = search_documents(query, top_k=top_k)
+
+            st.subheader("📚 Top Retrieved Documents")
+            for i, doc in enumerate(results, 1):
+                meta = doc.metadata or {}
+                title = meta.get("title", "N/A")
+                pmid = meta.get("pmid", "N/A")
+                authors = ", ".join(meta.get("authors", [])) if meta.get("authors") else "N/A"
+                journal = meta.get("journal", "N/A")
+                url = meta.get("url", "")
+                score = doc.metadata.get("score", None)
+
+                st.markdown(f"### 📄 Document {i}")
+                st.markdown(f"**Score:** {score:.4f}" if score else "Score: N/A")
+                st.markdown(f"**Title:** {title}")
+                st.markdown(f"**PMID:** {pmid}")
+                st.markdown(f"**Authors:** {authors}")
+                st.markdown(f"**Journal:** {journal}")
+                if url:
+                    st.markdown(f"🔗 [View on PubMed]({url})")
+                st.markdown(f"> {doc.page_content or 'No content available.'}")
                 st.markdown("---")
 
             st.subheader("🧠 Gemini Summary Answer")
