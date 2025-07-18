@@ -1,7 +1,7 @@
 import streamlit as st
 from semantic_search import search_documents, generate_summary
 
-st.set_page_config(page_title="🧠 Medical Research Navigator", layout="wide")
+st.set_page_config(page_title="Medical Research Navigator", layout="wide")
 st.title("🩺 Medical Research Navigator")
 st.markdown("Semantic search + Gemini-based summarization for PubMed abstracts.")
 
@@ -16,10 +16,10 @@ if st.button("Search"):
         st.warning("Please enter a valid query.")
     else:
         with st.spinner("🔍 Searching and summarizing..."):
-            docs = search_documents(query, top_k=top_k)  # ⬅️ Pass top_k
+            docs = search_documents(query, top_k=top_k)  
             answer = generate_summary(query, docs)
 
-        st.markdown("### 🧠 Gemini Summary")
+        st.markdown("### Gemini Summary")
         st.markdown(answer)
 
         st.markdown("---")
@@ -35,7 +35,7 @@ if st.button("Search"):
             st.markdown(f"**PMID:** {meta.get('pmid', 'N/A')}")
             st.markdown(f"🔗 [View on PubMed]({meta.get('url', '#')})")
 
-            with st.expander("📖 Show Source Chunk"):
+            with st.expander("Show Source Chunk"):
                 st.markdown(doc.page_content)
 
             st.markdown("---")
