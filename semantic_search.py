@@ -8,7 +8,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.schema import Document
 
-# Load environment variables and API key
+# Load environment variables
 load_dotenv()
 
 # Initialize embedding model
@@ -20,7 +20,7 @@ client = QdrantClient(path="./qdrant_db")
 # Initialize Gemini model
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
-# Prompt template for summarization
+# Prompt template
 SUMMARY_PROMPT = PromptTemplate(
     input_variables=["query", "context"],
     template="""
@@ -44,22 +44,35 @@ Context:
 # Gemini Chain
 chain = LLMChain(llm=llm, prompt=SUMMARY_PROMPT)
 
-# ----------- 🔍 Semantic Search Using Raw Qdrant --------------
-def search_documents(query, top_k=5):
+# ----------- Semantic Search  --------------
+def search_documents(query, top_k=5, journal_filter=None):
     query_vector = embedder.embed_query(query)
+
+    filters = None
+    if journal_filter:
+        filters = Filter(
+            must=[
+                FieldCondition(
+                    key="journal",
+                    match=MatchValue(value=journal_filter)
+                )
+            ]
+        )
+
     results = client.search(
         collection_name="medical_chunks_new",
         query_vector=query_vector,
         limit=top_k,
         with_payload=True,
-        with_vectors=False
+        with_vectors=False,
+        query_filter=filters
     )
 
     docs = []
     for r in results:
         doc = Document(
             page_content=r.payload.get("text", ""),
-            metadata={**r.payload, "score": r.score}  # ⬅ Store score inside metadata
+            metadata={**r.payload, "score": r.score}
         )
         docs.append(doc)
     return docs
